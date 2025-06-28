@@ -1,11 +1,7 @@
+import { Feather } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
@@ -13,31 +9,58 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+    screenOptions={{
+      headerShown: false,
+      tabBarStyle: {
+        backgroundColor: '#ffffff',
+        borderTopWidth: 1,
+        borderTopColor: '#e5e7eb',
+        paddingTop: 8,
+        paddingBottom: 8,
+        height: 70,
+      },
+      tabBarActiveTintColor: '#3B82F6',
+      tabBarInactiveTintColor: '#6B7280',
+      tabBarLabelStyle: {
+        fontSize: 12,
+        fontWeight: '600',
+        marginTop: 4,
+      },
+    }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Dashboard',
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="bar-chart-2" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="add-entry"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Add Entry',
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="plus" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="transactions"
+        options={{
+          title: 'Transactions',
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="repeat" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="reports"
+        options={{
+          title: 'Reports',
+          tabBarIcon: ({ size, color }) => (
+            <Feather name="file-text" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>
