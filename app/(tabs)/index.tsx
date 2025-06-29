@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [totalEmployeeAmount, setTotalEmployeeAmount] = useState<number>(0);
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);
 
-  console.log(accountsData, "- accountsData");
+  // console.log(accountsData, "- accountsData");
   // console.log(employeeData, "- employeeData");
   // console.log(cashbookBalance, "- cashbookBalance");
   // console.log(user, "- user");
@@ -79,6 +79,8 @@ export default function Dashboard() {
     }
   };
 
+  // Fund transer - to which account api replace 
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Logout Success Message */}
@@ -106,7 +108,7 @@ export default function Dashboard() {
         </View>
 
         {/* Summary Cards */}
-        <View style={styles.summaryContainer}>
+        {user.username === "anil" && user.id === "1" && <View style={styles.summaryContainer}>
           <View style={[styles.summaryCard, { backgroundColor: '#3b82f6' }]}>
             <View style={styles.summaryContent}>
               <View style={styles.summaryIcon}>
@@ -140,7 +142,7 @@ export default function Dashboard() {
             </View>
             {/* <Feather name="trending-up" size={20} color="#ffffff" style={styles.trendIcon} /> */}
           </View>
-        </View>
+        </View>}
 
         {/* Quick Actions */}
         <View style={styles.sectionContainer}>
@@ -161,7 +163,7 @@ export default function Dashboard() {
         </View>
 
         {/* Accounts Overview */}
-        <View style={styles.sectionContainer}>
+        {user.username === "anil" && user.id === "1" && <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Accounts Overview</Text>
           {accountsLoading ? (
             <View style={{ alignItems: 'center', paddingVertical: 20 }}>
@@ -206,10 +208,10 @@ export default function Dashboard() {
               })}
             </View>
           )}
-        </View>
+        </View>}
 
         {/* Employee Accounts */}
-        <View style={styles.sectionContainer}>
+        {user.username === "anil" && user.id === "1" && <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Employee Accounts</Text>
           {employeesLoading ? (
             <View style={{ alignItems: 'center', paddingVertical: 20 }}>
@@ -244,7 +246,7 @@ export default function Dashboard() {
               })}
             </View>
           )}
-        </View>
+        </View>}
       </ScrollView>
     </SafeAreaView>
   );

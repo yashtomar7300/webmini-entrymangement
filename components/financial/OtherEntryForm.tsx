@@ -32,13 +32,6 @@ const paymentTypeOptions = [
   { label: 'Bill', value: 'Bill' },
 ];
 
-const materialOptions = [
-  { label: 'Laminate Sheet', value: 'Laminate Sheet' },
-  { label: 'Adhesive', value: 'Adhesive' },
-  { label: 'Packaging Material', value: 'Packaging Material' },
-  { label: 'Tools & Equipment', value: 'Tools & Equipment' },
-];
-
 const OTHER_ENTRY_API = '/other_entry.php';
 
 export default function OtherEntryForm() {
@@ -388,7 +381,7 @@ export default function OtherEntryForm() {
               label="Material"
               value={formData.material}
               placeholder="Select Other Material"
-              options={materialOptions}
+              options={otherMaterialOptions}
               onSelect={(value) => {
                 setFormData({ ...formData, material: value });
                 if (errors.material) setErrors({ ...errors, material: undefined });

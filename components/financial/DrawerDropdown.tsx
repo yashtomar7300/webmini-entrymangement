@@ -53,10 +53,8 @@ export default function DrawerDropdown({
   const openDrawer = () => {
     setIsVisible(true);
     setSearchQuery(''); // Clear search when opening
-    // Focus search input after a short delay to ensure modal is fully open
-    setTimeout(() => {
-      searchInputRef.current?.focus();
-    }, 300);
+    // Removed autofocus to prevent keyboard from opening automatically
+    // This allows single-tap selection of options
   };
 
   const closeDrawer = () => {

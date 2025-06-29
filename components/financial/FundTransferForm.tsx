@@ -10,6 +10,7 @@ import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
 import FormWrapper, { FormWrapperRef } from './FormWrapper';
+import { useEmployees } from '@/hooks/api/creditEntryForm/useEmployees';
 
 interface FundTransferData {
   date: string;
@@ -25,7 +26,8 @@ const FUND_TRANSFER_API = '/account_transfer_entry.php';
 
 export default function FundTransferForm() {
   const { options: paymentModeOptions, loading: paymentModesLoading, error: paymentModesError } = usePaymentModes();
-  const { options: accountOptions, loading: accountsLoading, error: accountsError } = useAccounts();
+  // const { options: accountOptions, loading: accountsLoading, error: accountsError } = useAccounts();
+  const { options: employeeOptions, loading: employeesLoading, error: employeesError } = useEmployees();
   const {user} = useAuth();
   const remarksInputRef = useRef<TextInput>(null);
   const formWrapperRef = useRef<FormWrapperRef>(null);
@@ -268,18 +270,18 @@ export default function FundTransferForm() {
           </View>
 
           {/* Account Dropdown */}
-          {accountsLoading ? (
+          {employeesLoading ? (
             <View style={{ marginVertical: 16 }}>
               <ActivityIndicator size="small" color="#3B82F6" />
             </View>
-          ) : accountsError ? (
+          ) : employeesError ? (
             <Text style={{ color: '#EF4444', marginBottom: 12 }}>Failed to load accounts</Text>
           ) : (
             <DrawerDropdown
               label="To Which Account"
               value={formData.from_account_id}
               placeholder="Select Account"
-              options={accountOptions}
+              options={employeeOptions}
               onSelect={(value) => {
                 setFormData({ ...formData, from_account_id: value });
                 if (errors.from_account_id) setErrors({ ...errors, from_account_id: undefined });

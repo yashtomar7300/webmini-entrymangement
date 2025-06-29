@@ -54,7 +54,7 @@ export default function DebitEntryForm() {
     const newErrors: Partial<Record<keyof DebitEntryData, string>> = {};
     if (!formData.date) newErrors.date = 'Date is required';
     if (!formData.payment_mode_id) newErrors.payment_mode_id = 'Payment mode is required';
-    if (!formData.from_account_id) newErrors.account_id = 'Account is required';
+    if (formData.payment_mode_id !== "3" && !formData.from_account_id) newErrors.from_account_id = 'Account is required';
     if (!formData.party_id) newErrors.party_id = 'Party is required';
     if (!formData.amount) newErrors.amount = 'Amount is required';
     else if (isNaN(Number(formData.amount)) || Number(formData.amount) <= 0) {
@@ -65,10 +65,11 @@ export default function DebitEntryForm() {
   };
 
   const isFormValid = () => {
+    const accountRequired = formData.payment_mode_id !== "3";
     return (
       formData.date &&
       formData.payment_mode_id &&
-      formData.from_account_id &&
+      (!accountRequired || formData.from_account_id) &&
       formData.party_id &&
       formData.amount &&
       !isNaN(Number(formData.amount)) &&
@@ -240,7 +241,7 @@ export default function DebitEntryForm() {
             />
           )}
           {/* Account Dropdown */}
-          {accountsLoading ? (
+          {formData.payment_mode_id !== "3" && (accountsLoading ? (
             <View style={{ marginVertical: 16 }}>
               <ActivityIndicator size="small" color="#3B82F6" />
             </View>
@@ -259,7 +260,7 @@ export default function DebitEntryForm() {
               error={errors.from_account_id}
               required={true}
             />
-          )}
+          ))}
           {/* Party Dropdown */}
           {partiesLoading ? (
             <View style={{ marginVertical: 16 }}>

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "entry-management",
-    "slug": "entry-management",
+    "name": "Webmini CMP2023",
+    "slug": "webmini-cmp2023",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "entrymanagement",
+    "scheme": "webminicmp2023",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -19,7 +19,7 @@
       "edgeToEdgeEnabled": false,
       "navigationBarColor": "#ffffff",
       "navigationBarStyle": "light",
-      "package": "com.yashtomar.entrymanagement"
+      "package": "com.yashtomar.webminicmp2023"
     },
     "web": {
       "bundler": "metro",
