@@ -1,14 +1,17 @@
+import { useAccounts } from '@/hooks/api/creditEntryForm/useAccounts';
 import { useOtherMaterials } from '@/hooks/api/creditEntryForm/useOtherMaterials';
 import { useParties } from '@/hooks/api/creditEntryForm/useParties';
+import { usePaymentModes } from '@/hooks/api/creditEntryForm/usePaymentModes';
+import { useAuth } from '@/hooks/useAuth';
+import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import qs from 'qs';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
-import { useAuth } from '@/hooks/useAuth';
-import formatDate from '@/utils/formatDate';
+import FormWrapper, { FormWrapperRef } from './FormWrapper';
 
 interface OtherEntryData {
   other_entry_type: '1' | '2' | '';
@@ -39,10 +42,13 @@ const materialOptions = [
 const OTHER_ENTRY_API = '/other_entry.php';
 
 export default function OtherEntryForm() {
+  const { options: paymentModeOptions, loading: paymentModesLoading, error: paymentModesError } = usePaymentModes();
+  const { options: accountOptions, loading: accountsLoading, error: accountsError } = useAccounts();
   const { options: partyOptions, loading: partiesLoading, error: partiesError } = useParties();
-  const { options: materialOptions, loading: materialsLoading, error: materialsError } = useOtherMaterials();
+  const { options: otherMaterialOptions, loading: materialsLoading, error: materialsError } = useOtherMaterials();
   const { user } = useAuth();
-
+  const remarksInputRef = useRef<TextInput>(null);
+  const formWrapperRef = useRef<FormWrapperRef>(null);
   const [formData, setFormData] = useState<OtherEntryData>({
     other_entry_type: '',
     other_sale_date: formatDate(new Date()),
@@ -225,7 +231,7 @@ export default function OtherEntryForm() {
   );
 
   return (
-    <View style={styles.container}>
+    <FormWrapper ref={formWrapperRef}>
       {/* Success Animation */}
       {showSuccess && (
         <View style={styles.overlay}>
@@ -470,6 +476,13 @@ export default function OtherEntryForm() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              ref={remarksInputRef}
+              onFocus={() => {
+                // Automatically scroll to remarks field when focused
+                setTimeout(() => {
+                  formWrapperRef.current?.scrollToRemarks();
+                }, 150);
+              }}
             />
             {errors.remarks && <Text style={styles.errorText}>{errors.remarks}</Text>}
           </View>
@@ -501,7 +514,7 @@ export default function OtherEntryForm() {
           </View>
         </View>
       </View>
-    </View>
+    </FormWrapper>
   );
 }
 

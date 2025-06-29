@@ -1,15 +1,16 @@
 import { useAccounts } from '@/hooks/api/creditEntryForm/useAccounts';
 import { useParties } from '@/hooks/api/creditEntryForm/useParties';
+import { useAuth } from '@/hooks/useAuth';
+import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import qs from 'qs';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { usePaymentModes } from '../../hooks/api/creditEntryForm/usePaymentModes';
 import DrawerDropdown from './DrawerDropdown';
-import formatDate from '@/utils/formatDate';
-import { useAuth } from '@/hooks/useAuth';
+import FormWrapper, { FormWrapperRef } from './FormWrapper';
 
 // Updated interface to match API payload
 interface DebitEntryData {
@@ -29,6 +30,8 @@ export default function DebitEntryForm() {
   const { options: accountOptions, loading: accountsLoading, error: accountsError } = useAccounts();
   const { options: partyOptions, loading: partiesLoading, error: partiesError } = useParties();
   const { user } = useAuth();
+  const remarksInputRef = useRef<TextInput>(null);
+  const formWrapperRef = useRef<FormWrapperRef>(null);
 
   // Updated form state to match API
   const [formData, setFormData] = useState<DebitEntryData>({
@@ -159,7 +162,7 @@ export default function DebitEntryForm() {
   };
 
   return (
-    <View style={styles.container}>
+    <FormWrapper ref={formWrapperRef}>
       {/* Success Animation */}
       {showSuccess && (
         <View style={styles.overlay}>
@@ -311,6 +314,13 @@ export default function DebitEntryForm() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              ref={remarksInputRef}
+              onFocus={() => {
+                // Automatically scroll to remarks field when focused
+                setTimeout(() => {
+                  formWrapperRef.current?.scrollToRemarks();
+                }, 150);
+              }}
             />
             {errors.remarks && <Text style={styles.errorText}>{errors.remarks}</Text>}
           </View>
@@ -345,7 +355,7 @@ export default function DebitEntryForm() {
           </View>
         </View>
       </View>
-    </View>
+    </FormWrapper>
   );
 }
 

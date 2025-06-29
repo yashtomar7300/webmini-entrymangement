@@ -18,7 +18,7 @@ export default function Dashboard() {
   const [totalEmployeeAmount, setTotalEmployeeAmount] = useState<number>(0);
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);
 
-  // console.log(accountsData, "- accountsData");
+  console.log(accountsData, "- accountsData");
   // console.log(employeeData, "- employeeData");
   // console.log(cashbookBalance, "- cashbookBalance");
   // console.log(user, "- user");
@@ -110,7 +110,7 @@ export default function Dashboard() {
           <View style={[styles.summaryCard, { backgroundColor: '#3b82f6' }]}>
             <View style={styles.summaryContent}>
               <View style={styles.summaryIcon}>
-                <FontAwesome name="dollar" size={24} color="#ffffff" />
+                <FontAwesome name="dollar" size={18} color="#ffffff" />
               </View>
               <View>
                 <Text style={styles.summaryLabel}>Cashbook</Text>
@@ -125,20 +125,20 @@ export default function Dashboard() {
                 )}
               </View>
             </View>
-            <Feather name="trending-up" size={20} color="#ffffff" style={styles.trendIcon} />
+            {/* <Feather name="trending-up" size={20} color="#ffffff" style={styles.trendIcon} /> */}
           </View>
 
           <View style={[styles.summaryCard, { backgroundColor: '#10b981' }]}>
             <View style={styles.summaryContent}>
               <View style={styles.summaryIcon}>
-                <FontAwesome name="users" size={24} color="#ffffff" />
+                <FontAwesome name="users" size={18} color="#ffffff" />
               </View>
               <View>
                 <Text style={styles.summaryLabel}>Employees</Text>
                 <Text style={styles.summaryValue}>{formatCurrency(totalEmployeeAmount)}</Text>
               </View>
             </View>
-            <Feather name="trending-up" size={20} color="#ffffff" style={styles.trendIcon} />
+            {/* <Feather name="trending-up" size={20} color="#ffffff" style={styles.trendIcon} /> */}
           </View>
         </View>
 
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   summaryCard: {
     flex: 1,
     borderRadius: 16,
-    padding: 20,
+    padding: 10,
     position: 'relative',
   },
   summaryContent: {
@@ -315,8 +315,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   summaryIcon: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 24,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   summaryValue: {
-    fontSize: 18,
+    fontSize: 14,
     color: '#ffffff',
     fontWeight: '700',
     marginTop: 2,

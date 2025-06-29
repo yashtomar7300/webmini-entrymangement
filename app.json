@@ -16,7 +16,10 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": false,
+      "navigationBarColor": "#ffffff",
+      "navigationBarStyle": "light",
+      "package": "com.yashtomar.entrymanagement"
     },
     "web": {
       "bundler": "metro",

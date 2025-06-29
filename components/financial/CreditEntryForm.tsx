@@ -1,15 +1,16 @@
-import qs from 'qs';
 import { useAccounts } from '@/hooks/api/creditEntryForm/useAccounts';
 import { useParties } from '@/hooks/api/creditEntryForm/useParties';
+import { useAuth } from '@/hooks/useAuth';
+import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+import axios from 'axios';
+import qs from 'qs';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { usePaymentModes } from '../../hooks/api/creditEntryForm/usePaymentModes';
 import DrawerDropdown from './DrawerDropdown';
-import axios from 'axios';
-import formatDate from '@/utils/formatDate';
-import { useAuth } from '@/hooks/useAuth';
+import FormWrapper, { FormWrapperRef } from './FormWrapper';
 
 // Updated interface to match API payload
 interface CreditEntryData {
@@ -29,6 +30,8 @@ export default function CreditEntryForm() {
   const { options: accountOptions, loading: accountsLoading, error: accountsError } = useAccounts();
   const { options: partyOptions, loading: partiesLoading, error: partiesError } = useParties();
   const { user } = useAuth();
+  const remarksInputRef = useRef<TextInput>(null);
+  const formWrapperRef = useRef<FormWrapperRef>(null);
 
   // Updated form state to match API
   const [formData, setFormData] = useState<CreditEntryData>({
@@ -161,7 +164,7 @@ export default function CreditEntryForm() {
   console.log(formData, "- formData");
 
   return (
-    <View style={styles.container}>
+    <FormWrapper ref={formWrapperRef}>
       {/* Success Animation */}
       {showSuccess && (
         <View style={styles.overlay}>
@@ -313,6 +316,13 @@ export default function CreditEntryForm() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              ref={remarksInputRef}
+              onFocus={() => {
+                // Automatically scroll to remarks field when focused
+                setTimeout(() => {
+                  formWrapperRef.current?.scrollToRemarks();
+                }, 150);
+              }}
             />
             {errors.remarks && <Text style={styles.errorText}>{errors.remarks}</Text>}
           </View>
@@ -347,7 +357,7 @@ export default function CreditEntryForm() {
           </View>
         </View>
       </View>
-    </View>
+    </FormWrapper>
   );
 }
 
@@ -516,6 +526,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
     marginTop: 20,
+    marginBottom: 40,
   },
   submitButton: {
     backgroundColor: '#22c55e',

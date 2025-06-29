@@ -5,9 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import qs from 'qs';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
+import FormWrapper, { FormWrapperRef } from './FormWrapper';
 
 interface PaymentPlanningData {
   date: string;
@@ -24,6 +25,8 @@ const PAYMENT_PLANNING_API = '/payment_planing_entry.php';
 export default function PaymentPlanningForm() {
   const { options: partyOptions, loading: partiesLoading, error: partiesError } = useParties();
   const { options: employeeOptions, loading: employeesLoading, error: employeesError } = useEmployees();
+  const remarksInputRef = useRef<TextInput>(null);
+  const formWrapperRef = useRef<FormWrapperRef>(null);
   const [formData, setFormData] = useState<PaymentPlanningData>({
     date: formatDate(new Date()),
     type: '',
@@ -179,7 +182,7 @@ export default function PaymentPlanningForm() {
   );
 
   return (
-    <View style={styles.container}>
+    <FormWrapper ref={formWrapperRef}>
       {/* Success Animation */}
       {showSuccess && (
         <View style={styles.overlay}>
@@ -370,6 +373,12 @@ export default function PaymentPlanningForm() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              ref={remarksInputRef}
+              onFocus={() => {
+                setTimeout(() => {
+                  formWrapperRef.current?.scrollToRemarks();
+                }, 150);
+              }}
             />
             {errors.remarks && <Text style={styles.errorText}>{errors.remarks}</Text>}
           </View>
@@ -401,7 +410,7 @@ export default function PaymentPlanningForm() {
           </View>
         </View>
       </View>
-    </View>
+    </FormWrapper>
   );
 }
 

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React, { useMemo, useRef, useState } from 'react';
+import { Dimensions, FlatList, KeyboardAvoidingView, Modal, Platform, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface DropdownOption {
   label: string;
@@ -29,20 +29,40 @@ export default function DrawerDropdown({
   required = false,
 }: DrawerDropdownProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<TextInput>(null);
 
   const selectedOption = options.find(option => option.value === value);
+
+  // Filter options based on search query
+  const filteredOptions = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return options;
+    }
+    return options.filter(option =>
+      option.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [options, searchQuery]);
 
   const handleSelect = (selectedValue: string) => {
     onSelect(selectedValue);
     setIsVisible(false);
+    setSearchQuery(''); // Clear search when option is selected
   };
 
   const openDrawer = () => {
     setIsVisible(true);
+    setSearchQuery(''); // Clear search when opening
+    // Focus search input after a short delay to ensure modal is fully open
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 300);
   };
 
   const closeDrawer = () => {
     setIsVisible(false);
+    setSearchQuery(''); // Clear search when closing
+    searchInputRef.current?.blur();
   };
 
   return (
@@ -52,7 +72,7 @@ export default function DrawerDropdown({
           {label}
           {required && <Text style={styles.requiredAsterisk}> *</Text>}
         </Text>
-        
+
         <TouchableOpacity
           style={[styles.trigger, error && styles.errorInput]}
           onPress={openDrawer}
@@ -63,7 +83,7 @@ export default function DrawerDropdown({
           </Text>
           <Ionicons name="chevron-down" size={20} color="#6b7280" />
         </TouchableOpacity>
-        
+
         {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
 
@@ -81,57 +101,98 @@ export default function DrawerDropdown({
             activeOpacity={1}
             onPress={closeDrawer}
           />
-          
+
           {/* Drawer Content */}
-          <View style={styles.drawerContainer}>
-            {/* Header */}
-            <View style={styles.drawerHeader}>
-              <View style={styles.dragHandle} />
-              <View style={styles.headerContent}>
-                <Text style={styles.drawerTitle}>{label}</Text>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={closeDrawer}
-                >
-                  <Ionicons name="close" size={24} color="#6b7280" />
-                </TouchableOpacity>
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoidingContainer}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? (StatusBar.currentHeight || 0) : (StatusBar.currentHeight || 0) + 20}
+          >
+            <View style={styles.drawerContainer}>
+              {/* Header */}
+              <View style={styles.drawerHeader}>
+                <View style={styles.dragHandle} />
+                <View style={styles.headerContent}>
+                  <Text style={styles.drawerTitle}>{label}</Text>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={closeDrawer}
+                  >
+                    <Ionicons name="close" size={24} color="#6b7280" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Search Bar */}
+              {label === "Select Party" && <View style={styles.searchContainer}>
+                <View style={styles.searchInputContainer}>
+                  <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
+                  <TextInput
+                    ref={searchInputRef}
+                    style={styles.searchInput}
+                    placeholder={`Search ${label.toLowerCase()}...`}
+                    placeholderTextColor="#9ca3af"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    // autoFocus={false}
+                    returnKeyType="search"
+                    clearButtonMode="never"
+                  />
+                  {searchQuery.length > 0 && (
+                    <TouchableOpacity
+                      style={styles.clearButton}
+                      onPress={() => setSearchQuery('')}
+                    >
+                      <Ionicons name="close-circle" size={20} color="#9ca3af" />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>}
+
+              {/* Options List */}
+              <View style={styles.optionsContainer}>
+                <FlatList
+                  data={filteredOptions}
+                  keyExtractor={(item) => item.value}
+                  showsVerticalScrollIndicator={false}
+                  style={styles.optionsList}
+                  contentContainerStyle={styles.optionsListContent}
+                  keyboardShouldPersistTaps="handled"
+                  keyboardDismissMode="none"
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={[
+                        styles.optionItem,
+                        item.value === value && styles.selectedOption
+                      ]}
+                      onPress={() => handleSelect(item.value)}
+                      activeOpacity={0.6}
+                    >
+                      <Text style={[
+                        styles.optionText,
+                        item.value === value && styles.selectedOptionText
+                      ]}>
+                        {item.label}
+                      </Text>
+                      {item.value === value && (
+                        <View style={styles.checkContainer}>
+                          <Ionicons name="checkmark" size={20} color="#3B82F6" />
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  )}
+                  ItemSeparatorComponent={() => <View style={styles.separator} />}
+                  ListEmptyComponent={() => (
+                    <View style={styles.emptyContainer}>
+                      <Ionicons name="search-outline" size={48} color="#9ca3af" />
+                      <Text style={styles.emptyText}>No {label.toLowerCase()} found</Text>
+                      <Text style={styles.emptySubtext}>Try adjusting your search</Text>
+                    </View>
+                  )}
+                />
               </View>
             </View>
-
-            {/* Options List */}
-            <View style={styles.optionsContainer}>
-              <FlatList
-                data={options}
-                keyExtractor={(item) => item.value}
-                showsVerticalScrollIndicator={false}
-                style={styles.optionsList}
-                contentContainerStyle={styles.optionsListContent}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.optionItem,
-                      item.value === value && styles.selectedOption
-                    ]}
-                    onPress={() => handleSelect(item.value)}
-                    activeOpacity={0.6}
-                  >
-                    <Text style={[
-                      styles.optionText,
-                      item.value === value && styles.selectedOptionText
-                    ]}>
-                      {item.label}
-                    </Text>
-                    {item.value === value && (
-                      <View style={styles.checkContainer}>
-                        <Ionicons name="checkmark" size={20} color="#3B82F6" />
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                )}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
-              />
-            </View>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       </Modal>
     </>
@@ -187,21 +248,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   backdrop: {
-    flex: 1,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-    drawerContainer: {
-        backgroundColor: '#ffffff',
-        borderTopLeftRadius: 28,
-        borderTopRightRadius: 28,
-        maxHeight: screenHeight * 0.8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -8 },
-        shadowOpacity: 0.15,
-        shadowRadius: 20,
-        elevation: 20,
-        overflow: 'hidden',
-      },
+  keyboardAvoidingContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  drawerContainer: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    maxHeight: screenHeight * 0.7,
+    minHeight: screenHeight * 0.4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 20,
+    overflow: 'hidden',
+  },
   drawerHeader: {
     paddingTop: 12,
     paddingHorizontal: 20,
@@ -276,5 +346,50 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#f1f5f9',
     marginHorizontal: 4,
+  },
+  searchContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  searchInputContainer: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1f2937',
+    paddingVertical: 4,
+  },
+  clearButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  emptyContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#9ca3af',
   },
 });

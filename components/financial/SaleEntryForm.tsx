@@ -1,8 +1,9 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Platform, ScrollView } from 'react-native';
-import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useRef, useState } from 'react';
+import { Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
+import FormWrapper, { FormWrapperRef } from './FormWrapper';
 
 interface ProductRow {
   id: string;
@@ -62,6 +63,8 @@ const finishOptions = [
 ];
 
 export default function SaleEntryForm() {
+  const remarksInputRef = useRef<TextInput>(null);
+  const formWrapperRef = useRef<FormWrapperRef>(null);
   const [formData, setFormData] = useState<SaleEntryData>({
     saleDate: new Date(),
     party: '',
@@ -272,7 +275,7 @@ export default function SaleEntryForm() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <FormWrapper ref={formWrapperRef}>
       <View style={styles.formCard}>
         <View style={styles.cardHeader}>
           <Text style={styles.formTitle}>Add Sale Entry</Text>
@@ -442,6 +445,13 @@ export default function SaleEntryForm() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              ref={remarksInputRef}
+              onFocus={() => {
+                // Automatically scroll to remarks field when focused
+                setTimeout(() => {
+                  formWrapperRef.current?.scrollToRemarks();
+                }, 150);
+              }}
             />
             {errors.remarks && <Text style={styles.errorText}>{errors.remarks}</Text>}
           </View>
@@ -563,7 +573,7 @@ export default function SaleEntryForm() {
           </View>
         </View>
       </View>
-    </ScrollView>
+    </FormWrapper>
   );
 }
 

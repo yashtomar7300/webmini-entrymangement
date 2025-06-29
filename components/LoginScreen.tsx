@@ -27,6 +27,8 @@ export default function LoginScreen() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successAnimation] = useState(new Animated.Value(0));
     const [errorAnimation] = useState(new Animated.Value(0));
+    const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+    const usernameInputRef = useRef<TextInput>(null);
     const passwordInputRef = useRef<TextInput>(null);
 
     const handleLogin = async () => {
@@ -59,6 +61,7 @@ export default function LoginScreen() {
     };
 
     const showSuccessAnimation = () => {
+        setIsSuccessVisible(true);
         Animated.sequence([
             Animated.timing(successAnimation, {
                 toValue: 1,
@@ -71,7 +74,9 @@ export default function LoginScreen() {
                 delay: 1500,
                 useNativeDriver: true,
             }),
-        ]).start();
+        ]).start(() => {
+            setIsSuccessVisible(false);
+        });
     };
 
     const showErrorAnimation = () => {
@@ -121,6 +126,7 @@ export default function LoginScreen() {
                                     <FontAwesome name="user" size={20} color="#6B7280" />
                                 </View>
                                 <TextInput
+                                    ref={usernameInputRef}
                                     style={styles.input}
                                     placeholder="Username"
                                     placeholderTextColor="#9CA3AF"
@@ -132,6 +138,7 @@ export default function LoginScreen() {
                                     onSubmitEditing={() => {
                                         passwordInputRef.current?.focus();
                                     }}
+                                    editable={!isLoading}
                                 />
                             </View>
                             {/* Password Input */}
@@ -151,12 +158,14 @@ export default function LoginScreen() {
                                     secureTextEntry={!showPassword}
                                     returnKeyType="done"
                                     onSubmitEditing={handleLogin}
+                                    editable={!isLoading}
                                 />
                                 <TouchableOpacity
                                     style={styles.passwordToggle}
                                     onPress={() => setShowPassword(!showPassword)}
                                     activeOpacity={0.7}
                                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                                    disabled={isLoading}
                                 >
                                     <Feather
                                         name={showPassword ? 'eye-off' : 'eye'}
@@ -179,57 +188,60 @@ export default function LoginScreen() {
                             </TouchableOpacity>
                         </View>
 
-                        {/* Success Animation */}
-                        <Animated.View
-                            style={[
-                                styles.overlay,
-                                styles.successOverlay,
-                                {
-                                    opacity: successAnimation,
-                                    transform: [
-                                        {
-                                            scale: successAnimation.interpolate({
-                                                inputRange: [0, 1],
-                                                outputRange: [0.8, 1],
-                                            }),
-                                        },
-                                    ],
-                                },
-                            ]}
-                        >
-                            <View style={styles.successContainer}>
-                                <View style={styles.successIcon}>
-                                    <Feather name="check" size={32} color="#FFFFFF" />
-                                </View>
-                                <Text style={styles.successText}>Logged in successfully</Text>
-                            </View>
-                        </Animated.View>
-
                         {/* Error Toast */}
-                        <Animated.View
-                            style={[
-                                styles.errorToast,
-                                {
-                                    transform: [
-                                        {
-                                            translateY: errorAnimation.interpolate({
-                                                inputRange: [0, 1],
-                                                outputRange: [-100, 0],
-                                            }),
-                                        },
-                                    ],
-                                    opacity: errorAnimation,
-                                },
-                            ]}
-                        >
-                            <View style={styles.errorContent}>
-                                <Feather name="alert-circle" size={20} color="#FFFFFF" />
-                                <Text style={styles.errorText}>{errorMessage}</Text>
-                            </View>
-                        </Animated.View>
+                        {errorMessage ? (
+                            <Animated.View
+                                style={[
+                                    styles.errorToast,
+                                    {
+                                        transform: [
+                                            {
+                                                translateY: errorAnimation.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [-100, 0],
+                                                }),
+                                            },
+                                        ],
+                                        opacity: errorAnimation,
+                                    },
+                                ]}
+                            >
+                                <View style={styles.errorContent}>
+                                    <Feather name="alert-circle" size={20} color="#FFFFFF" />
+                                    <Text style={styles.errorText}>{errorMessage}</Text>
+                                </View>
+                            </Animated.View>
+                        ) : null}
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
+
+            {/* Success Animation - Moved outside ScrollView to avoid blocking */}
+            <Animated.View
+                style={[
+                    styles.overlay,
+                    styles.successOverlay,
+                    {
+                        opacity: successAnimation,
+                        transform: [
+                            {
+                                scale: successAnimation.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [0.8, 1],
+                                }),
+                            },
+                        ],
+                        pointerEvents: isSuccessVisible ? 'auto' : 'none',
+                    },
+                ]}
+            >
+                <View style={styles.successContainer}>
+                    <View style={styles.successIcon}>
+                        <Feather name="check" size={32} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.successText}>Logged in successfully</Text>
+                </View>
+            </Animated.View>
         </SafeAreaView>
     );
 }

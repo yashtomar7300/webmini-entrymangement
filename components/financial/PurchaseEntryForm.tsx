@@ -5,9 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import qs from 'qs';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
+import FormWrapper, { FormWrapperRef } from './FormWrapper';
 
 interface PurchaseEntryData {
   purchase_date: string;
@@ -27,6 +28,8 @@ const PURCHASE_ENTRY_API = '/purchase_entry.php';
 export default function PurchaseEntryForm() {
   const { options: partyOptions, loading: partiesLoading, error: partiesError } = useParties();
   const { options: purchaseMaterialOptions, loading: materialsLoading, error: materialsError } = usePurchaseMaterials();
+  const remarksInputRef = useRef<TextInput>(null);
+  const formWrapperRef = useRef<FormWrapperRef>(null);
   const [formData, setFormData] = useState<PurchaseEntryData>({
     purchase_date: formatDate(new Date()),
     party_id: '',
@@ -202,7 +205,7 @@ export default function PurchaseEntryForm() {
   };
 
   return (
-    <View style={styles.container}>
+    <FormWrapper ref={formWrapperRef}>
       {/* Success Animation */}
       {showSuccess && (
         <View style={styles.overlay}>
@@ -447,6 +450,13 @@ export default function PurchaseEntryForm() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+              ref={remarksInputRef}
+              onFocus={() => {
+                // Automatically scroll to remarks field when focused
+                setTimeout(() => {
+                  formWrapperRef.current?.scrollToRemarks();
+                }, 150);
+              }}
             />
             {errors.remarks && <Text style={styles.errorText}>{errors.remarks}</Text>}
           </View>
@@ -478,7 +488,7 @@ export default function PurchaseEntryForm() {
           </View>
         </View>
       </View>
-    </View>
+    </FormWrapper>
   );
 }
 
