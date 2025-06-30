@@ -1,5 +1,6 @@
-import { useAccounts } from '@/hooks/api/creditEntryForm/useAccounts';
-import { usePaymentModes } from '@/hooks/api/creditEntryForm/usePaymentModes';
+import { useRefresh } from '@/contexts/RefreshContext';
+import { useEmployees } from '@/hooks/api/entryForms/useEmployees';
+import { usePaymentModes } from '@/hooks/api/entryForms/usePaymentModes';
 import { useAuth } from '@/hooks/useAuth';
 import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +11,6 @@ import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
 import FormWrapper, { FormWrapperRef } from './FormWrapper';
-import { useEmployees } from '@/hooks/api/creditEntryForm/useEmployees';
 
 interface FundTransferData {
   date: string;
@@ -46,6 +46,7 @@ export default function FundTransferForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const { triggerRefresh } = useRefresh();
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof FundTransferData, string>> = {};
@@ -97,6 +98,7 @@ export default function FundTransferForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
           setFormData({

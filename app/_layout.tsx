@@ -8,6 +8,7 @@ import LoadingScreen from '@/components/LoadingScreen';
 import LoginScreen from '@/components/LoginScreen';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { RefreshProvider } from '@/contexts/RefreshContext';
 
 function RootLayoutNav() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -41,9 +42,11 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <RootLayoutNav />
-      </AuthProvider>
+      <RefreshProvider>
+        <AuthProvider>
+          <RootLayoutNav />
+        </AuthProvider>
+      </RefreshProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
   );

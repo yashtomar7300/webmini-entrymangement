@@ -1,3 +1,4 @@
+import { useRefresh } from '@/contexts/RefreshContext';
 import apiClient from '@/utils/apiClient';
 import { useEffect, useState } from 'react';
 
@@ -11,7 +12,8 @@ export function useCashbookBalance() {
   const [cashbookBalance, setCashbookBalance] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+  const {refresh} = useRefresh();
+  
   useEffect(() => {
     async function fetchCashbookBalance() {
       setLoading(true);
@@ -31,7 +33,7 @@ export function useCashbookBalance() {
       }
     }
     fetchCashbookBalance();
-  }, []);
+  }, [refresh]);
 
   return { cashbookBalance, loading, error };
 } 

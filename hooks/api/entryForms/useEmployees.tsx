@@ -1,3 +1,4 @@
+import { useRefresh } from '@/contexts/RefreshContext';
 import apiClient from '@/utils/apiClient';
 import { useEffect, useState } from 'react';
 
@@ -57,6 +58,7 @@ export function useEmployeeBalances() {
   const [employees, setEmployees] = useState<EmployeeBalanceData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { refresh } = useRefresh();
 
   useEffect(() => {
     async function fetchEmployeeBalances() {
@@ -77,7 +79,7 @@ export function useEmployeeBalances() {
       }
     }
     fetchEmployeeBalances();
-  }, []);
+  }, [refresh]);
 
   return { employees, loading, error };
 } 

@@ -1,3 +1,4 @@
+import { useRefresh } from '@/contexts/RefreshContext';
 import apiClient from '@/utils/apiClient';
 import { useEffect, useState } from 'react';
 
@@ -22,6 +23,7 @@ export function useTransactions(employeeId: string) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const {refresh} = useRefresh();
 
   useEffect(() => {
     async function fetchTransactions() {
@@ -49,7 +51,7 @@ export function useTransactions(employeeId: string) {
       }
     }
     fetchTransactions();
-  }, [employeeId]);
+  }, [employeeId, refresh]);
 
   return { transactions, loading, error };
 } 

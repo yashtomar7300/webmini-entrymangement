@@ -1,4 +1,5 @@
-import { useTransactions } from '@/hooks/api/creditEntryForm/useTransactions';
+import { useRefresh } from '@/contexts/RefreshContext';
+import { useTransactions } from '@/hooks/api/entryForms/useTransactions';
 import { useAuth } from '@/hooks/useAuth';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -39,10 +40,11 @@ export default function Transactions() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'credit' | 'debit'>('all');
   const [currentPage, setCurrentPage] = useState(1);
-  
+  const { triggerRefresh } = useRefresh();
+
   // Animation value for sliding indicator
   const slideAnim = useMemo(() => new Animated.Value(0), []);
-  
+
   // Animation value for active tab scale
   const scaleAnim = useMemo(() => new Animated.Value(1), []);
 
@@ -58,9 +60,9 @@ export default function Transactions() {
 
     transactions.forEach(transaction => {
       if (!transaction || !transaction.tfrom) return;
-      
+
       all.push(transaction);
-      
+
       if (transaction.tfrom === "1") {
         credit.push(transaction);
       } else if (transaction.tfrom === "2") {
@@ -94,10 +96,10 @@ export default function Transactions() {
     const filterIndex = { all: 0, credit: 1, debit: 2 };
     const targetIndex = filterIndex[selectedFilter];
     const tabWidth = (screenWidth - 32 - 20) / 3; // screen width - padding - gaps
-    
+
     // Reset scale animation
     scaleAnim.setValue(0.95);
-    
+
     // Animate both sliding and scaling
     Animated.parallel([
       Animated.spring(slideAnim, {
@@ -126,13 +128,13 @@ export default function Transactions() {
     if (!amount || amount.trim() === '') {
       return '₹0';
     }
-    
+
     const numAmount = parseInt(amount);
-    
+
     if (isNaN(numAmount)) {
       return '₹N/A';
     }
-    
+
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
@@ -144,12 +146,12 @@ export default function Transactions() {
     if (!dateString) {
       return 'N/A';
     }
-    
+
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
       return 'Invalid Date';
     }
-    
+
     return date.toLocaleDateString('en-IN', {
       day: '2-digit',
       month: 'short',
@@ -163,7 +165,7 @@ export default function Transactions() {
 
   const getPaymentModeColor = (mode: string) => {
     if (!mode) return '#6b7280';
-    
+
     switch (mode.toLowerCase()) {
       case 'cash':
         return '#10b981';
@@ -193,14 +195,14 @@ export default function Transactions() {
         useNativeDriver: false,
       })
     ]).start();
-    
+
     setSelectedFilter(filter);
   }, [scaleAnim]);
 
   // Render transaction item
   const renderTransactionItem = useCallback(({ item: transaction, index }: { item: Transaction; index: number }) => {
     const creditTransaction = isCredit(transaction);
-    
+
     return (
       <View style={styles.transactionCard}>
         {/* Date Row */}
@@ -287,9 +289,9 @@ export default function Transactions() {
   const renderFooter = useCallback(() => {
     const currentTransactions = getCurrentTransactions();
     const totalPages = Math.ceil(currentTransactions.length / ITEMS_PER_PAGE);
-    
+
     if (totalPages <= 1) return null;
-    
+
     return (
       <View style={styles.paginationContainer}>
         <Text style={styles.paginationText}>
@@ -331,7 +333,7 @@ export default function Transactions() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
@@ -344,15 +346,15 @@ export default function Transactions() {
       <View style={styles.filterContainer}>
         <View style={styles.tabContainer}>
           {/* Sliding Background Indicator */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.slidingIndicator,
               {
                 transform: [{ translateX: slideAnim }]
               }
-            ]} 
+            ]}
           />
-          
+
           {[
             { key: 'all', label: 'All', icon: 'list' },
             { key: 'credit', label: 'Credit', icon: 'trending-up' },
@@ -372,10 +374,10 @@ export default function Transactions() {
                 onPress={() => handleFilterChange(filter.key as any)}
                 activeOpacity={0.7}
               >
-                <Feather 
-                  name={filter.icon as any} 
-                  size={16} 
-                  color={selectedFilter === filter.key ? '#ffffff' : '#6b7280'} 
+                <Feather
+                  name={filter.icon as any}
+                  size={16}
+                  color={selectedFilter === filter.key ? '#ffffff' : '#6b7280'}
                 />
                 <Text
                   style={[
@@ -399,7 +401,7 @@ export default function Transactions() {
         contentContainerStyle={styles.transactionsListContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={loading} onRefresh={triggerRefresh} />
         }
         ListEmptyComponent={renderEmptyState}
         ListFooterComponent={renderFooter}
@@ -484,7 +486,7 @@ const styles = StyleSheet.create({
     padding: 4,
     gap: 0,
     width: '100%',
-    height:50
+    height: 50
   },
   slidingIndicator: {
     position: 'absolute',

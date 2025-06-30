@@ -1,5 +1,6 @@
-import { useParties } from '@/hooks/api/creditEntryForm/useParties';
-import { usePurchaseMaterials } from '@/hooks/api/creditEntryForm/usePurchaseMaterials';
+import { useRefresh } from '@/contexts/RefreshContext';
+import { useParties } from '@/hooks/api/entryForms/useParties';
+import { usePurchaseMaterials } from '@/hooks/api/entryForms/usePurchaseMaterials';
 import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -48,6 +49,7 @@ export default function PurchaseEntryForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const { triggerRefresh } = useRefresh();
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof PurchaseEntryData, string>> = {};
@@ -122,6 +124,7 @@ export default function PurchaseEntryForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
           setFormData({

@@ -1,6 +1,6 @@
-import { useAccountStats } from '@/hooks/api/creditEntryForm/useAccountStats';
-import { useCashbookBalance } from '@/hooks/api/creditEntryForm/useCashbookBalance';
-import { useEmployeeBalances } from '@/hooks/api/creditEntryForm/useEmployees';
+import { useAccountStats } from '@/hooks/api/entryForms/useAccountStats';
+import { useCashbookBalance } from '@/hooks/api/entryForms/useCashbookBalance';
+import { useEmployeeBalances } from '@/hooks/api/entryForms/useEmployees';
 import { useAuth } from '@/hooks/useAuth';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';

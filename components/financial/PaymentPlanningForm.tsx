@@ -1,14 +1,16 @@
-import { useEmployees } from '@/hooks/api/creditEntryForm/useEmployees';
-import { useParties } from '@/hooks/api/creditEntryForm/useParties';
+import { useRefresh } from '@/contexts/RefreshContext';
+import { useEmployees } from '@/hooks/api/entryForms/useEmployees';
+import { useParties } from '@/hooks/api/entryForms/useParties';
 import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import qs from 'qs';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
 import FormWrapper, { FormWrapperRef } from './FormWrapper';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PaymentPlanningData {
   date: string;
@@ -25,6 +27,7 @@ const PAYMENT_PLANNING_API = '/payment_planing_entry.php';
 export default function PaymentPlanningForm() {
   const { options: partyOptions, loading: partiesLoading, error: partiesError } = useParties();
   const { options: employeeOptions, loading: employeesLoading, error: employeesError } = useEmployees();
+  const { user } = useAuth();
   const remarksInputRef = useRef<TextInput>(null);
   const formWrapperRef = useRef<FormWrapperRef>(null);
   const [formData, setFormData] = useState<PaymentPlanningData>({
@@ -42,7 +45,13 @@ export default function PaymentPlanningForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const { triggerRefresh } = useRefresh();
 
+  useEffect(() => {
+    if (user && user.id) {
+      setFormData({ ...formData, employee_id: user?.id });
+    }
+  }, [user])
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof PaymentPlanningData, string>> = {};
@@ -96,6 +105,7 @@ export default function PaymentPlanningForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
           setFormData({

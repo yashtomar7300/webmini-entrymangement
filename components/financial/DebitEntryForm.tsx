@@ -1,5 +1,6 @@
-import { useAccounts } from '@/hooks/api/creditEntryForm/useAccounts';
-import { useParties } from '@/hooks/api/creditEntryForm/useParties';
+import { useRefresh } from '@/contexts/RefreshContext';
+import { useAccounts } from '@/hooks/api/entryForms/useAccounts';
+import { useParties } from '@/hooks/api/entryForms/useParties';
 import { useAuth } from '@/hooks/useAuth';
 import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +9,7 @@ import axios from 'axios';
 import qs from 'qs';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { usePaymentModes } from '../../hooks/api/creditEntryForm/usePaymentModes';
+import { usePaymentModes } from '../../hooks/api/entryForms/usePaymentModes';
 import DrawerDropdown from './DrawerDropdown';
 import FormWrapper, { FormWrapperRef } from './FormWrapper';
 
@@ -32,6 +33,7 @@ export default function DebitEntryForm() {
   const { user } = useAuth();
   const remarksInputRef = useRef<TextInput>(null);
   const formWrapperRef = useRef<FormWrapperRef>(null);
+  const { triggerRefresh } = useRefresh();
 
   // Updated form state to match API
   const [formData, setFormData] = useState<DebitEntryData>({
@@ -111,6 +113,7 @@ export default function DebitEntryForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
           resetForm();

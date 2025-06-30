@@ -1,7 +1,8 @@
-import { useAccounts } from '@/hooks/api/creditEntryForm/useAccounts';
-import { useOtherMaterials } from '@/hooks/api/creditEntryForm/useOtherMaterials';
-import { useParties } from '@/hooks/api/creditEntryForm/useParties';
-import { usePaymentModes } from '@/hooks/api/creditEntryForm/usePaymentModes';
+import { useRefresh } from '@/contexts/RefreshContext';
+import { useAccounts } from '@/hooks/api/entryForms/useAccounts';
+import { useOtherMaterials } from '@/hooks/api/entryForms/useOtherMaterials';
+import { useParties } from '@/hooks/api/entryForms/useParties';
+import { usePaymentModes } from '@/hooks/api/entryForms/usePaymentModes';
 import { useAuth } from '@/hooks/useAuth';
 import formatDate from '@/utils/formatDate';
 import { Ionicons } from '@expo/vector-icons';
@@ -61,6 +62,7 @@ export default function OtherEntryForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const { triggerRefresh } = useRefresh();
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof OtherEntryData, string>> = {};
@@ -130,6 +132,7 @@ export default function OtherEntryForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
           setFormData({
@@ -443,7 +446,7 @@ export default function OtherEntryForm() {
             </Text>
             <TextInput
               style={[styles.input, errors.total && styles.errorInput]}
-              value={formData.total}
+              value={`${Number(formData.qty) * Number(formData.rate)}`}
               onChangeText={(text) => {
                 setFormData({ ...formData, total: text });
                 if (errors.total) {

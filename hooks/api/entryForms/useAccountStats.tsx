@@ -1,3 +1,4 @@
+import { useRefresh } from '@/contexts/RefreshContext';
 import apiClient from '@/utils/apiClient';
 import { useEffect, useState } from 'react';
 
@@ -12,6 +13,7 @@ export function useAccountStats() {
   const [accounts, setAccounts] = useState<AccountData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const {refresh} = useRefresh();
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -32,7 +34,7 @@ export function useAccountStats() {
       }
     }
     fetchAccounts();
-  }, []);
+  }, [refresh]);
 
   return { accounts, loading, error };
 }
