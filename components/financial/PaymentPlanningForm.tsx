@@ -359,7 +359,7 @@ export default function PaymentPlanningForm() {
           ) : (
             <DrawerDropdown
               label="Select Employee"
-              value={formData.employee_id}
+              value={user?.id}
               placeholder="Select Employee"
               options={employeeOptions}
               onSelect={(value) => {

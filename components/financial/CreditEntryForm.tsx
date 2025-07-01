@@ -102,39 +102,53 @@ export default function CreditEntryForm() {
     setShowSuccess(false);
     setShowError(false);
     const apiUrl = "https://cmp2023.webmini.in/api"
-    try {
-      const response = await axios.post(`${apiUrl}/${CREDIT_ENTRY_API}`,
-        qs.stringify({ ...formData, account_id: user?.id }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
-      console.log(response, "submit response");
+    // console.log(formData, "formData", user.id, "- userid");
 
-      if (response.data.res === 1) {
-        setShowSuccess(true);
-        triggerRefresh();
-        setTimeout(() => {
-          setShowSuccess(false);
-          resetForm();
-        }, 2000);
-      } else {
+    if (user.id) {
+      try {
+        const payload = { ...formData, account_id: user?.id }
+        console.log(payload, "- payload");
+        
+        const response = await axios.post(`${apiUrl}/${CREDIT_ENTRY_API}`,
+          qs.stringify(payload),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        );
+        console.log(response, "submit response");
+
+        if (response.data.res === 1) {
+          setShowSuccess(true);
+          triggerRefresh();
+          setTimeout(() => {
+            setShowSuccess(false);
+            resetForm();
+          }, 2000);
+        } else {
+          setShowError(true);
+          setTimeout(() => {
+            setShowError(false);
+          }, 3000);
+        }
+      } catch (error) {
+        console.log(error, "- submit error");
+
         setShowError(true);
         setTimeout(() => {
           setShowError(false);
         }, 3000);
+      } finally {
+        setIsSubmitting(false);
       }
-    } catch (error) {
-      console.log(error, "- submit error");
-
+    }
+    else {
+      setIsSubmitting(false);
       setShowError(true);
       setTimeout(() => {
         setShowError(false);
       }, 3000);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

@@ -35,7 +35,7 @@ export function useTransactions(employeeId: string) {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiClient.get(`${GET_TRANSACTIONS}?employee_id=${employeeId}`);
+        const response = await apiClient.get(`${GET_TRANSACTIONS}?employee_id=${1}`);
         const {data} = response.data;
         console.log(response, "- response transactions");
         
