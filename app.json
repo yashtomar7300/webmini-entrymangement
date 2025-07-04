@@ -4,7 +4,7 @@
     "slug": "webmini-cmp2023",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon.jpg",
     "scheme": "webminicmp2023",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

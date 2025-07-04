@@ -65,6 +65,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10, // Reduced padding since we're adding extra space
   },
   extraSpace: {
-    height: 100, // Large extra space to ensure remarks field is always visible
+    height: 110, // Large extra space to ensure remarks field is always visible
   },
 }); 

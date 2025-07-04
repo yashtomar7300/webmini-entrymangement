@@ -15,6 +15,7 @@ interface DrawerDropdownProps {
   onSelect: (value: string) => void;
   error?: string;
   required?: boolean;
+  disabled?: boolean;
 }
 
 const { height: screenHeight } = Dimensions.get('window');
@@ -27,6 +28,7 @@ export default function DrawerDropdown({
   onSelect,
   error,
   required = false,
+  disabled = false,
 }: DrawerDropdownProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,9 +74,12 @@ export default function DrawerDropdown({
         </Text>
 
         <TouchableOpacity
-          style={[styles.trigger, error && styles.errorInput]}
-          onPress={openDrawer}
-          activeOpacity={0.7}
+           style={[styles.trigger, error && styles.errorInput, disabled && styles.disabledTrigger]}
+           onPress={() => {
+             if (!disabled) openDrawer();
+           }}
+           activeOpacity={0.7}
+           disabled={disabled} 
         >
           <Text style={[styles.triggerText, !value && styles.placeholderText]}>
             {selectedOption?.label || placeholder}
@@ -389,5 +394,11 @@ const styles = StyleSheet.create({
   emptySubtext: {
     fontSize: 14,
     color: '#9ca3af',
+  },
+  disabledTrigger: {
+    backgroundColor: '#f8fafc',
+    borderColor: '#d1d5db',
+    cursor: "not-allowed",
+    opacity: 0.5,
   },
 });

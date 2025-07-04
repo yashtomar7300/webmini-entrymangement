@@ -63,14 +63,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         password,
       });
 
-      console.log(response, "- login response");
-      
-
       if (response.data.res === 2 && response.status===200) {
         // Login successful
         const token = response.data.token || 'dummy-token-' + Date.now();
         const expiryTime = Date.now() + (2 * 24 * 60 * 60 * 1000); // 2 days from now
-        const userData = { username, id: response.data.user_id || '1' };
+        const userData = { username:response.data.username , id: response.data.login_id  || '1' };
 
         await AsyncStorage.setItem('authToken', token);
         await AsyncStorage.setItem('tokenExpiry', expiryTime.toString());

@@ -36,7 +36,7 @@ export function useEmployees() {
           setOptions(
             data.map((item: EmployeeOption, index) => ({
               label: item.employee_name,
-              value: String(index + 1),
+              value: item.employee_id,
             }))
           );
         } else {

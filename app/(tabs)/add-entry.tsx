@@ -45,12 +45,14 @@ export default function Financial() {
         <Text style={styles.title}>Financial Entries</Text>
         <Text style={styles.subtitle}>Manage your financial transactions</Text>
       </View>
-      
+
       <FinancialEntryTabs activeTab={activeTab} onTabChange={setActiveTab} />
-      
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+
+      {/* <ScrollView style={styles.content} showsVerticalScrollIndicator={false}> */}
+      <View style={styles.content}>
         {renderActiveForm()}
-      </ScrollView>
+      </View>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 }
@@ -61,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   header: {
-    padding: 20,
+    padding: 15,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',

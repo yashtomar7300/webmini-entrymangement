@@ -19,7 +19,7 @@ export default function Dashboard() {
   const [showLogoutMessage, setShowLogoutMessage] = useState(false);
 
   // console.log(accountsData, "- accountsData");
-  // console.log(employeeData, "- employeeData");
+  console.log(employeeData, "- employeeData");
   // console.log(cashbookBalance, "- cashbookBalance");
   // console.log(user, "- user");
 
@@ -80,7 +80,7 @@ export default function Dashboard() {
   };
 
   // Fund transer - to which account api replace 
-
+console.log(user, "- user")
   return (
     <SafeAreaView style={styles.container}>
       {/* Logout Success Message */}
@@ -211,7 +211,7 @@ export default function Dashboard() {
         </View>}
 
         {/* Employee Accounts */}
-        {user.username === "anil" && user.id === "1" && <View style={styles.sectionContainer}>
+        <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Employee Accounts</Text>
           {employeesLoading ? (
             <View style={{ alignItems: 'center', paddingVertical: 20 }}>
@@ -223,30 +223,39 @@ export default function Dashboard() {
             </Text>
           ) : (
             <View style={styles.employeeContainer}>
-              {employeeData.map((employee, index) => {
-                const numericBalance = parseFloat(employee.emp_bal.replace(/,/g, ''));
-                return (
-                  <View key={index} style={styles.employeeCard}>
-                    <View style={styles.employeeInfo}>
-                      <View style={styles.employeeAvatar}>
-                        <Text style={styles.employeeInitial}>
-                          {employee.emp_name.charAt(0).toUpperCase()}
-                        </Text>
+              {employeeData
+                .filter(employee => {
+                  // If user is "anil", show all employees
+                  if (user.username === "anil") {
+                    return true;
+                  }
+                  // Otherwise, only show employee whose name matches user's username (case-insensitive)
+                  return employee.emp_name.toLowerCase() === user.username.toLowerCase();
+                })
+                .map((employee, index) => {
+                  const numericBalance = parseFloat(employee.emp_bal.replace(/,/g, ''));
+                  return (
+                    <View key={index} style={styles.employeeCard}>
+                      <View style={styles.employeeInfo}>
+                        <View style={styles.employeeAvatar}>
+                          <Text style={styles.employeeInitial}>
+                            {employee.emp_name.charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                        <Text style={styles.employeeName}>{employee.emp_name}</Text>
                       </View>
-                      <Text style={styles.employeeName}>{employee.emp_name}</Text>
+                      <Text style={[
+                        styles.employeeAmount,
+                        { color: employee.emp_bal.startsWith('-') ? '#ef4444' : '#10b981' }
+                      ]}>
+                        {formatAccountBalance(employee.emp_bal)}
+                      </Text>
                     </View>
-                    <Text style={[
-                      styles.employeeAmount,
-                      { color: employee.emp_bal.startsWith('-') ? '#ef4444' : '#10b981' }
-                    ]}>
-                      {formatAccountBalance(employee.emp_bal)}
-                    </Text>
-                  </View>
-                );
-              })}
+                  );
+                })}
             </View>
           )}
-        </View>}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

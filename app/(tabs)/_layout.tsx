@@ -74,11 +74,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="reports"
+        name="planning"
         options={{
-          title: 'Reports',
+          title: 'View Planning',
           tabBarIcon: ({ size, color }) => (
-            <Feather name="file-text" size={size} color={color} />
+            <Feather name="credit-card" size={size} color={color} />
           ),
         }}
       />

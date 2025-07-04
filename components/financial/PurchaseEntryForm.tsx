@@ -10,6 +10,7 @@ import { useRef, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import DrawerDropdown from './DrawerDropdown';
 import FormWrapper, { FormWrapperRef } from './FormWrapper';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PurchaseEntryData {
   purchase_date: string;
@@ -50,6 +51,7 @@ export default function PurchaseEntryForm() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const { triggerRefresh } = useRefresh();
+  const {user} = useAuth();
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof PurchaseEntryData, string>> = {};
@@ -113,7 +115,7 @@ export default function PurchaseEntryForm() {
     try {
       const response = await axios.post(
         apiUrl + PURCHASE_ENTRY_API,
-        qs.stringify({...formData, user_id:"1"}),
+        qs.stringify({...formData, user_id:user?.id}),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

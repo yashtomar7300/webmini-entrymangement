@@ -25,6 +25,7 @@ export function useTransactions(employeeId: string) {
   const [error, setError] = useState<string | null>(null);
   const {refresh} = useRefresh();
 
+  console.log(employeeId, "- employeeId");
   useEffect(() => {
     async function fetchTransactions() {
       if (!employeeId) {
@@ -35,7 +36,7 @@ export function useTransactions(employeeId: string) {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiClient.get(`${GET_TRANSACTIONS}?employee_id=${1}`);
+        const response = await apiClient.get(`${GET_TRANSACTIONS}?employee_id=${employeeId}`);
         const {data} = response.data;
         console.log(response, "- response transactions");
         

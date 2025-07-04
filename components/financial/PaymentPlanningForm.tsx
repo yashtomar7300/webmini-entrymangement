@@ -114,7 +114,7 @@ export default function PaymentPlanningForm() {
             pay_mode: '',
             amount: '',
             party_id: '',
-            employee_id: '',
+            employee_id: user?.id,
             remarks: '',
           });
           setErrors({});
@@ -143,7 +143,7 @@ export default function PaymentPlanningForm() {
       pay_mode: '',
       amount: '',
       party_id: '',
-      employee_id: '',
+      employee_id: user?.id,
       remarks: '',
     });
     setErrors({});
@@ -368,6 +368,7 @@ export default function PaymentPlanningForm() {
               }}
               error={errors.employee_id}
               required={true}
+              disabled={true}
             />
           )}
 
