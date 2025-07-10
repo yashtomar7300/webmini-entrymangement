@@ -109,6 +109,21 @@ export default function OtherEntryForm() {
       Number(formData.total) > 0
     );
   };
+  const resetForm = () => {
+    setFormData({
+      other_entry_type: '',
+      other_sale_date: formatDate(new Date()),
+      party_id: '',
+      sale_type: '',
+      bill_no: '',
+      material: '',
+      qty: '',
+      rate: '',
+      total: '',
+      remarks: '',
+      user_id: ''
+    });
+  }
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
@@ -132,22 +147,10 @@ export default function OtherEntryForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        resetForm();
         triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
-          setFormData({
-            other_entry_type: '',
-            other_sale_date: formatDate(new Date()),
-            party_id: '',
-            sale_type: '',
-            bill_no: '',
-            material: '',
-            qty: '',
-            rate: '',
-            total: '',
-            remarks: '',
-            user_id: ''
-          });
           setErrors({});
         }, 2000);
       } else {
@@ -163,24 +166,13 @@ export default function OtherEntryForm() {
         setShowError(false);
       }, 3000);
     } finally {
+      resetForm();
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    setFormData({
-      other_entry_type: '',
-      other_sale_date: formatDate(new Date()),
-      party_id: '',
-      sale_type: '',
-      bill_no: '',
-      material: '',
-      qty: '',
-      rate: '',
-      total: '',
-      remarks: '',
-      user_id: ''
-    });
+    resetForm();
     setErrors({});
   };
 
@@ -404,9 +396,19 @@ export default function OtherEntryForm() {
               style={[styles.input, errors.qty && styles.errorInput]}
               value={formData.qty}
               onChangeText={(text) => {
-                setFormData({ ...formData, qty: text });
+                const newQty = text;
+                const newRate = formData.rate;
+                const calculatedTotal = Number(newQty || 0) * Number(newRate || 0);
+                setFormData({
+                  ...formData,
+                  qty: newQty,
+                  total: calculatedTotal > 0 ? calculatedTotal.toString() : ''
+                });
                 if (errors.qty) {
                   setErrors({ ...errors, qty: undefined });
+                }
+                if (errors.total) {
+                  setErrors({ ...errors, total: undefined });
                 }
               }}
               placeholder="Qty"
@@ -426,9 +428,19 @@ export default function OtherEntryForm() {
               style={[styles.input, errors.rate && styles.errorInput]}
               value={formData.rate}
               onChangeText={(text) => {
-                setFormData({ ...formData, rate: text });
+                const newRate = text;
+                const newQty = formData.qty;
+                const calculatedTotal = Number(newQty || 0) * Number(newRate || 0);
+                setFormData({
+                  ...formData,
+                  rate: newRate,
+                  total: calculatedTotal > 0 ? calculatedTotal.toString() : ''
+                });
                 if (errors.rate) {
                   setErrors({ ...errors, rate: undefined });
+                }
+                if (errors.total) {
+                  setErrors({ ...errors, total: undefined });
                 }
               }}
               placeholder="Rate"
@@ -446,7 +458,7 @@ export default function OtherEntryForm() {
             </Text>
             <TextInput
               style={[styles.input, errors.total && styles.errorInput]}
-              value={`${Number(formData.qty) * Number(formData.rate)}`}
+              value={formData.total}
               onChangeText={(text) => {
                 setFormData({ ...formData, total: text });
                 if (errors.total) {

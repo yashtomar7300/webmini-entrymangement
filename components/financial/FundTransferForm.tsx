@@ -28,7 +28,7 @@ export default function FundTransferForm() {
   const { options: paymentModeOptions, loading: paymentModesLoading, error: paymentModesError } = usePaymentModes();
   // const { options: accountOptions, loading: accountsLoading, error: accountsError } = useAccounts();
   const { options: employeeOptions, loading: employeesLoading, error: employeesError } = useEmployees();
-  const {user} = useAuth();
+  const { user } = useAuth();
   const remarksInputRef = useRef<TextInput>(null);
   const formWrapperRef = useRef<FormWrapperRef>(null);
   const [formData, setFormData] = useState<FundTransferData>({
@@ -76,10 +76,22 @@ export default function FundTransferForm() {
     );
   };
 
+  const resetForm = () => {
+    setFormData({
+      date: formatDate(new Date()),
+      type: '',
+      from_account_id: '',
+      payment_mode_id: '',
+      amount: '',
+      remarks: '',
+      user_id: '',
+    });
+  }
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
     console.log(formData, "- formData");
-    
+
     setIsSubmitting(true);
     setShowSuccess(false);
     setShowError(false);
@@ -98,18 +110,10 @@ export default function FundTransferForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        resetForm();
         triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
-          setFormData({
-            date: formatDate(new Date()),
-            type: '',
-            from_account_id: '',
-            payment_mode_id: '',
-            amount: '',
-            remarks: '',
-            user_id: '1',
-          });
           setErrors({});
         }, 2000);
       } else {
@@ -125,20 +129,13 @@ export default function FundTransferForm() {
         setShowError(false);
       }, 3000);
     } finally {
+      resetForm();
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    setFormData({
-      date: formatDate(new Date()),
-      type: '',
-      from_account_id: '',
-      payment_mode_id: '',
-      amount: '',
-      remarks: '',
-      user_id: "1"
-    });
+   resetForm();
     setErrors({});
   };
 

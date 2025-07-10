@@ -113,10 +113,10 @@ export default function DebitEntryForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        resetForm();
         triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
-          resetForm();
         }, 2000);
       } else {
         setShowError(true);
@@ -131,6 +131,7 @@ export default function DebitEntryForm() {
         setShowError(false);
       }, 3000);
     } finally {
+      resetForm();
       setIsSubmitting(false);
     }
   };

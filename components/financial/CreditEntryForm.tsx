@@ -141,6 +141,7 @@ export default function CreditEntryForm() {
         }, 3000);
       } finally {
         setIsSubmitting(false);
+        resetForm()
       }
     }
     else {

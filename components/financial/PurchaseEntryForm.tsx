@@ -51,7 +51,7 @@ export default function PurchaseEntryForm() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const { triggerRefresh } = useRefresh();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const validateForm = () => {
     const newErrors: Partial<Record<keyof PurchaseEntryData, string>> = {};
@@ -104,10 +104,25 @@ export default function PurchaseEntryForm() {
     );
   };
 
+  const resetForm = () => {
+    setFormData({
+      purchase_date: formatDate(new Date()),
+      party_id: '',
+      bill_no: '',
+      material_id: '',
+      qty: '',
+      truck_no: '',
+      truck_rent: '',
+      labour_charge: '',
+      waybridge_charge: '',
+      remarks: '',
+    });
+  }
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
     console.log(formData, "- formData");
-    
+
     setIsSubmitting(true);
     setShowSuccess(false);
     setShowError(false);
@@ -115,7 +130,7 @@ export default function PurchaseEntryForm() {
     try {
       const response = await axios.post(
         apiUrl + PURCHASE_ENTRY_API,
-        qs.stringify({...formData, user_id:user?.id}),
+        qs.stringify({ ...formData, user_id: user?.id }),
         {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -129,18 +144,6 @@ export default function PurchaseEntryForm() {
         triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
-          setFormData({
-            purchase_date: formatDate(new Date()),
-            party_id: '',
-            bill_no: '',
-            material_id: '',
-            qty: '',
-            truck_no: '',
-            truck_rent: '',
-            labour_charge: '',
-            waybridge_charge: '',
-            remarks: '',
-          });
           setErrors({});
         }, 2000);
       } else {
@@ -156,23 +159,13 @@ export default function PurchaseEntryForm() {
         setShowError(false);
       }, 3000);
     } finally {
+      resetForm();
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    setFormData({
-      purchase_date: formatDate(new Date()),
-      party_id: '',
-      bill_no: '',
-      material_id: '',
-      qty: '',
-      truck_no: '',
-      truck_rent: '',
-      labour_charge: '',
-      waybridge_charge: '',
-      remarks: '',
-    });
+    resetForm();
     setErrors({});
   };
 

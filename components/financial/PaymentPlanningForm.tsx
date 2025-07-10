@@ -83,6 +83,18 @@ export default function PaymentPlanningForm() {
     );
   };
 
+  const resetForm = () => {
+    setFormData({
+      date: formatDate(new Date()),
+      type: '',
+      pay_mode: '',
+      amount: '',
+      party_id: '',
+      employee_id: user?.id,
+      remarks: '',
+    });
+  }
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
     console.log(formData, "- formdata");
@@ -105,18 +117,10 @@ export default function PaymentPlanningForm() {
 
       if (response.data.res === 1) {
         setShowSuccess(true);
+        resetForm();
         triggerRefresh();
         setTimeout(() => {
           setShowSuccess(false);
-          setFormData({
-            date: formatDate(new Date()),
-            type: '',
-            pay_mode: '',
-            amount: '',
-            party_id: '',
-            employee_id: user?.id,
-            remarks: '',
-          });
           setErrors({});
         }, 2000);
       } else {
@@ -132,20 +136,13 @@ export default function PaymentPlanningForm() {
         setShowError(false);
       }, 3000);
     } finally {
+      resetForm();
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    setFormData({
-      date: formatDate(new Date()),
-      type: '',
-      pay_mode: '',
-      amount: '',
-      party_id: '',
-      employee_id: user?.id,
-      remarks: '',
-    });
+    resetForm();
     setErrors({});
   };
 

@@ -226,11 +226,11 @@ console.log(user, "- user")
               {employeeData
                 .filter(employee => {
                   // If user is "anil", show all employees
-                  if (user.username === "anil") {
+                  if (user.id === "1") {
                     return true;
                   }
                   // Otherwise, only show employee whose name matches user's username (case-insensitive)
-                  return employee.emp_name.toLowerCase() === user.username.toLowerCase();
+                  return employee.emp_id === user?.id;
                 })
                 .map((employee, index) => {
                   const numericBalance = parseFloat(employee.emp_bal.replace(/,/g, ''));

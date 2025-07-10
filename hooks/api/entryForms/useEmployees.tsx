@@ -10,6 +10,7 @@ export interface EmployeeOption {
 export interface EmployeeBalanceData {
   emp_name: string;
   emp_bal: string;
+  emp_id:string;
 }
 
 export interface DropdownOption {
